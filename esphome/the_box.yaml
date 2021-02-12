@@ -1,0 +1,283 @@
+# for a multi-purpose custom box
+
+# four panel meters
+# four 3-position switches
+# three knobs with on/off switches
+
+esphome:
+  name: the_box
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: ""
+  password: ""
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "The Box Fallback Hotspot"
+    password: ""
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+i2c:
+
+ads1115:
+  address: 0x48
+
+mcp23017:
+  id: mcp23017_hub
+
+sensor:
+  - platform: ads1115
+    gain: 4.096
+    multiplexer: A0_GND
+    name: knob_one
+    update_interval: 0.5s
+    unit_of_measurement: '%'
+    filters:
+      - calibrate_linear:
+        - 0.0 -> 0.0
+        - 3.2 -> 100
+        
+  - platform: ads1115
+    gain: 4.096
+    multiplexer: A1_GND
+    name: knob_two
+    update_interval: 0.5s
+    unit_of_measurement: '%'
+    filters:
+      - calibrate_linear:
+        - 0.0 -> 0.0
+        - 3.2 -> 100
+        
+  - platform: ads1115
+    gain: 4.096
+    multiplexer: A2_GND
+    name: knob_three
+    update_interval: 0.5s
+    unit_of_measurement: '%'
+    filters:
+      - calibrate_linear:
+        - 0.0 -> 0.0
+        - 3.2 -> 100
+        
+  - platform: binary_sensor_map
+    id: switch_1
+    name: 'Switch 1'
+    type: GROUP
+    channels:
+      - binary_sensor: switch_1_top
+        value: 1
+      - binary_sensor: switch_1_middle
+        value: 0
+      - binary_sensor: switch_1_bottom
+        value: -1
+  - platform: binary_sensor_map
+    id: switch_2
+    name: 'Switch 2'
+    type: GROUP
+    channels:
+      - binary_sensor: switch_2_top
+        value: 1
+      - binary_sensor: switch_2_middle
+        value: 0
+      - binary_sensor: switch_2_bottom
+        value: -1
+  - platform: binary_sensor_map
+    id: switch_3
+    name: 'Switch 3'
+    type: GROUP
+    channels:
+      - binary_sensor: switch_3_top
+        value: 1
+      - binary_sensor: switch_3_middle
+        value: 0
+      - binary_sensor: switch_3_bottom
+        value: -1
+  - platform: binary_sensor_map
+    id: switch_4
+    name: 'Switch 4'
+    type: GROUP
+    channels:
+      - binary_sensor: switch_4_top
+        value: 1
+      - binary_sensor: switch_4_middle
+        value: 0
+      - binary_sensor: switch_4_bottom
+        value: -1
+    
+binary_sensor:
+  - platform: gpio
+    id: switch_1_top
+    pin:
+      mcp23017: mcp23017_hub
+      number: 0
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_1_middle
+    pin:
+      mcp23017: mcp23017_hub
+      number: 1
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_1_bottom
+    pin:
+      mcp23017: mcp23017_hub
+      number: 2
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+      
+  - platform: gpio
+    id: switch_2_top
+    pin:
+      mcp23017: mcp23017_hub
+      number: 3
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_2_middle
+    pin:
+      mcp23017: mcp23017_hub
+      number: 4
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_2_bottom
+    pin:
+      mcp23017: mcp23017_hub
+      number: 5
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+
+  - platform: gpio
+    id: switch_3_top
+    pin:
+      mcp23017: mcp23017_hub
+      number: 6
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_3_middle
+    pin:
+      mcp23017: mcp23017_hub
+      number: 7
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_3_bottom
+    pin:
+      mcp23017: mcp23017_hub
+      number: 8
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+
+  - platform: gpio
+    id: switch_4_top
+    pin:
+      mcp23017: mcp23017_hub
+      number: 9
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_4_middle
+    pin:
+      mcp23017: mcp23017_hub
+      number: 10
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    id: switch_4_bottom
+    pin:
+      mcp23017: mcp23017_hub
+      number: 11
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+      
+  - platform: gpio
+    name: switch_knob_1
+    pin:
+      mcp23017: mcp23017_hub
+      number: 12
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    name: switch_knob_2
+    pin:
+      mcp23017: mcp23017_hub
+      number: 13
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+  - platform: gpio
+    name: switch_knob_3
+    pin:
+      mcp23017: mcp23017_hub
+      number: 14
+      mode: INPUT_PULLUP
+    filters:
+      - invert:
+      
+      
+pca9685:
+  frequency: 50.0
+  address: 0x40
+  
+output:
+  - platform: pca9685
+    channel: 0
+    id: meter_sky
+    max_power: 0.1
+  - platform: pca9685
+    channel: 1
+    id: meter_recommendation
+    max_power: 0.1
+  - platform: pca9685
+    channel: 2
+    id: meter_temp
+    max_power: 0.1
+  - platform: pca9685
+    channel: 3
+    id: meter_wind
+    max_power: 0.1
+
+light:
+  - platform: monochromatic
+    name: "Sky meter"
+    output: meter_sky
+    gamma_correct: 0
+  - platform: monochromatic
+    name: "Recommendation meter"
+    output: meter_recommendation
+    gamma_correct: 0
+  - platform: monochromatic
+    name: "Temp meter"
+    output: meter_temp
+    gamma_correct: 0
+  - platform: monochromatic
+    name: "Wind meter"
+    output: meter_wind
+    gamma_correct: 0
