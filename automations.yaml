@@ -1,0 +1,52 @@
+- id: '1613096269599'
+  alias: 'Box: Update'
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: '*'
+    minutes: '*'
+    seconds: /5
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      brightness_pct: '{%- if state_attr(''weather.home'',''temperature'')|int < -20
+        -%} 0.0 {%- elif state_attr(''weather.home'',''temperature'')|int > 35 -%}
+        100.0 {%- else -%} {{ (state_attr(''weather.home'',''temperature'')|int +
+        20) * 1.81 }} {%- endif -%}
+
+        '
+    entity_id: light.temp_meter
+  - service: light.turn_on
+    data:
+      brightness_pct: '{{ state_attr(''weather.home'',''wind_speed'')|int }}
+
+        '
+    entity_id: light.wind_meter
+  - service: light.turn_on
+    data:
+      brightness_pct: '{%- if is_state(''weather.home'', ''sunny'') -%} 5
+
+        {%- elif is_state(''weather.home'', ''clear-night'') -%} 10
+
+        {%- elif is_state(''weather.home'', ''partlycloudy'') -%} 15
+
+        {%- elif is_state(''weather.home'', ''cloudy'') -%} 27
+
+        {%- elif is_state(''weather.home'', ''fog'') -%} 37
+
+        {%- elif is_state(''weather.home'', ''rainy'') -%} 45
+
+        {%- elif is_state(''weather.home'', ''pouring'') -%} 55
+
+        {%- elif is_state(''weather.home'', ''snowy-rainy'') -%} 65
+
+        {%- elif is_state(''weather.home'', ''snowy'') -%} 75
+
+        {%- else -%} 95
+
+        {%- endif -%}
+
+        '
+    entity_id: light.sky_meter
+  mode: single
